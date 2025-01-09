@@ -18,8 +18,10 @@ class StorageService(MinioStorageService):
         # init minio
         if in_config is None:
             self.minio_config = get_config("services", "minio", default={})
+            log.info("DEBUG_BUNDLE: in_config is none, read config", extra=dict(minio_config=self.minio_config))
         else:
             self.minio_config = in_config
+            log.info("DEBUG_BUNDLE: set config from in_config", extra=dict(minio_config=self.minio_config))
 
         if "host" not in self.minio_config:
             self.minio_config["host"] = "minio"
@@ -29,6 +31,8 @@ class StorageService(MinioStorageService):
             self.minio_config["iam_auth"] = False
         if "iam_endpoint" not in self.minio_config:
             self.minio_config["iam_endpoint"] = None
+
+        log.info("DEBUG_BUNDLE: updated config with default value", extra=dict(minio_config=self.minio_config))
 
         if not MINIO_CLIENT:
             MINIO_CLIENT = self.init_minio_client(
@@ -45,8 +49,10 @@ class StorageService(MinioStorageService):
 
     def create_presigned_put(self, bucket, path, expires):
         expires = timedelta(seconds=expires)
+        log.info("DEBUG_BUNDLE: create_presigned_put", extra=dict(bucket=bucket,path=path))
         return self.minio_client.presigned_put_object(bucket, path, expires)
 
     def create_presigned_get(self, bucket, path, expires):
         expires = timedelta(seconds=expires)
+        log.info("DEBUG_BUNDLE: create_presigned_get", extra=dict(bucket=bucket,path=path))
         return self.minio_client.presigned_get_object(bucket, path, expires)
